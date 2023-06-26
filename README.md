@@ -42,10 +42,11 @@ This project is a Students' Information Management System that allows users to m
 
    ```
 
-4. Access the application:
-5. 
-Open your web browser and visit <http://localhost:8080> to access the Students' Information Management System
+4. Access the application: 
+- Open your web browser and visit <http://localhost:8080> to access the Students' Information Management System
 
-Database Schema
-The database schema for the project is as follows:
+5. Database Schema
+- The database schema for the project is as follows:
+- 
+![Erd-sys-mng-sys](https://github.com/Mahmoud1499/Student-Managment-System/assets/99666114/a0cf5365-8189-4f70-8066-c5f36c1f4c47)
 
