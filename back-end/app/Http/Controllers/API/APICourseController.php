@@ -34,6 +34,7 @@ class APICourseController extends Controller
     }
 
 
+
     public function show($id)
     {
         $course = Course::with(['students' => function ($query) use ($id) {
@@ -42,14 +43,14 @@ class APICourseController extends Controller
             });
         }, 'students.grades' => function ($query) use ($id) {
             $query->where('course_code', $id);
-        }])->findOrFail($id);
+        }, 'grades'])->findOrFail($id);
 
         // Prepare the response data
         $responseData = [
             'course' => $course,
             'students' => $course->students->map(function ($student) use ($id) {
                 $grades = $student->grades->filter(function ($grade) use ($id) {
-                    return $grade->course_id == $id;
+                    return $grade->course_code == $id;
                 })->mapWithKeys(function ($grade) {
                     return [$grade->gradeItem->name => $grade->grade];
                 })->all();
