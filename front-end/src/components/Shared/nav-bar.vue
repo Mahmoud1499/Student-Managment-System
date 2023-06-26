@@ -30,8 +30,8 @@ export default {
     return {
       navItems: [
         { id: 1, label: 'Home', path: '/' },
-        { id: 2, label: 'About', path: '/about' },
-        { id: 3, label: 'Contact', path: '/contact' }
+        { id: 2, label: 'students', path: '/students' },
+        { id: 3, label: 'courses', path: '/courses' }
       ]
     };
   }
