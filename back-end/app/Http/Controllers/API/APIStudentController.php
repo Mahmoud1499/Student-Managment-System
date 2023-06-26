@@ -13,7 +13,7 @@ class APIStudentController extends Controller
     public function index()
     {
         // Retrieve all students
-        $students = Student::all();
+        $students = Student::withoutTrashed()->get();
 
         // Return the students as a response
         return response()->json($students);
@@ -72,13 +72,14 @@ class APIStudentController extends Controller
         // Find the student by ID
         $student = Student::findOrFail($id);
 
-        // Delete the student record
+        // Soft delete the student record
         $student->delete();
 
         // Return a success response
         return response()->json(['message' => 'Student deleted successfully']);
     }
 
-        // Add additional methods for filtering and searching students here
+
+    // Add additional methods for filtering and searching students here
 
 }

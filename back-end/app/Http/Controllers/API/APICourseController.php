@@ -17,7 +17,21 @@ class APICourseController extends Controller
         // Return the courses as a response
         return response()->json($courses);
     }
+    public function store(Request $request)
+    {
+        // Validate the request data
+        $validatedData = $request->validate([
+            'code' => 'required|unique:courses',
+            'name' => 'required',
+            'description' => 'required',
+        ]);
 
+        // Create a new course
+        $course = Course::create($validatedData);
+
+        // Return the created course as a response
+        return response()->json($course);
+    }
     public function show($id)
     {
         // Find the course by ID
@@ -26,6 +40,26 @@ class APICourseController extends Controller
         // Return the course as a response
         return response()->json($course);
     }
+
+    public function update(Request $request, $code)
+    {
+        // Find the course by code
+        $course = Course::where('code', $code)->firstOrFail();
+
+        // Validate the request data
+        $validatedData = $request->validate([
+            'code' => 'required|unique:courses,code,' . $code . ',code',
+            'name' => 'required',
+            'description' => 'required',
+        ]);
+
+        // Update the course
+        $course->update($validatedData);
+
+        // Return the updated course as a response
+        return response()->json($course);
+    }
+
 
     public function enrollStudent(Request $request, $id)
     {

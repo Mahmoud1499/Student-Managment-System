@@ -32,6 +32,9 @@ Route::delete('/students/{code}', [APIStudentController::class, 'destroy']);
 // Courses Management
 Route::get('/courses', [APICourseController::class, 'index']);
 Route::get('/courses/{code}', [APICourseController::class, 'show']);
+Route::post('/courses', [APICourseController::class, 'store']);
+Route::put('/courses/{code}', [APICourseController::class, 'update']);
+Route::delete('/courses/{code}', [APICourseController::class, 'destroy']);
 
 // Enrollment and Grading
 Route::post('/courses/{code}/enrollment', [APICourseController::class, 'storeEnrollment']);
