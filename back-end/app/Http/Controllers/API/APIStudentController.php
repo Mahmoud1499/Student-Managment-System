@@ -22,7 +22,7 @@ class APIStudentController extends Controller
 
     public function show($id)
     {
-        $student = Student::findOrFail($id);
+        $student = Student::with('courses')->findOrFail($id);
 
         return response()->json($student);
     }

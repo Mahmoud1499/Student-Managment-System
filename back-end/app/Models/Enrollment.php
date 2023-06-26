@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Enrollment extends Model
 {
     use HasFactory;
+
+    protected $primaryKey = 'course_code';
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -24,5 +26,9 @@ class Enrollment extends Model
     public function student()
     {
         return $this->belongsTo(Student::class, 'student_code', 'code');
+    }
+    public function getKeyName()
+    {
+        return $this->primaryKey;
     }
 }

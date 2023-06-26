@@ -147,10 +147,6 @@ class APICourseController extends Controller
 
     public function removeStudent($courseId, $studentId)
     {
-        $course = Course::findOrFail($courseId);
-        $student = Student::findOrFail($studentId);
-
-        // Find and delete the enrollment record
         $enrollment = Enrollment::where('course_code', $courseId)
             ->where('student_code', $studentId)
             ->first();
