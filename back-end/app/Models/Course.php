@@ -21,6 +21,8 @@ class Course extends Model
         return $this->belongsToMany(Student::class, 'enrollments', 'course_code', 'student_code');
     }
 
+
+
     public function grades()
     {
         return $this->hasMany(Grade::class, 'course_code', 'code');

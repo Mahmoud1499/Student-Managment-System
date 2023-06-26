@@ -36,7 +36,7 @@
           <td>{{ course.description }}</td>
           <td>
             <router-link :to="`/courses/${course.code}`" class="btn btn-info">
-              Get Data
+             Details
             </router-link>
             <router-link
               :to="`/courses/${course.code}/edit`"

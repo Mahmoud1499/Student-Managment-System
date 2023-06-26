@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Course;
+use Illuminate\Http\Request;
 // use App\Models\Student;
 
 class APICourseController extends Controller
@@ -32,13 +32,38 @@ class APICourseController extends Controller
         // Return the created course as a response
         return response()->json($course);
     }
+
+
     public function show($id)
     {
-        // Find the course by ID
-        $course = Course::findOrFail($id);
+        $course = Course::with(['students' => function ($query) use ($id) {
+            $query->whereHas('courses', function ($query) use ($id) {
+                $query->where('course_code', $id);
+            });
+        }, 'students.grades' => function ($query) use ($id) {
+            $query->where('course_code', $id);
+        }])->findOrFail($id);
 
-        // Return the course as a response
-        return response()->json($course);
+        // Prepare the response data
+        $responseData = [
+            'course' => $course,
+            'students' => $course->students->map(function ($student) use ($id) {
+                $grades = $student->grades->filter(function ($grade) use ($id) {
+                    return $grade->course_id == $id;
+                })->mapWithKeys(function ($grade) {
+                    return [$grade->gradeItem->name => $grade->grade];
+                })->all();
+
+                return [
+                    'id' => $student->id,
+                    'name' => $student->full_name,
+                    'code' => $student->code,
+                    'grades' => $grades,
+                ];
+            }),
+        ];
+
+        return response()->json($responseData);
     }
 
     public function update(Request $request, $code)

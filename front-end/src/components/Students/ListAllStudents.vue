@@ -6,6 +6,16 @@
         Add New Student
       </router-link>
     </div>
+    <div class="form-group mb-2">
+      <label for="search">Search:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="search"
+        v-model="searchTerm"
+        @input="filterStudents"
+      />
+    </div>
     <table class="table table-striped float-right">
       <thead>
         <tr>
@@ -14,12 +24,12 @@
           <th>Name</th>
           <th>Date of Birth</th>
           <th>Email</th>
-          <th>Level ID</th>
+          <th>Level </th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(student, index) in students" :key="student.code">
+        <tr v-for="(student, index) in filteredStudents" :key="student.code">
           <td>{{ index + 1 }}</td>
           <td>{{ student.code }}</td>
           <td>{{ student.full_name }}</td>
@@ -28,7 +38,7 @@
           <td>{{ student.level_id }}</td>
           <td>
             <router-link :to="`/students/${student.code}`" class="btn btn-info">
-              Get Data
+              Details
             </router-link>
             <router-link
               :to="`/students/${student.code}/edit`"
@@ -90,7 +100,6 @@
   </div>
 </template>
 
-
 <script>
 import axios from "axios";
 import { BASE_URL } from "../../api";
@@ -100,6 +109,8 @@ export default {
     return {
       students: [],
       selectedStudent: null,
+      filteredStudents: [],
+      searchTerm: "",
     };
   },
   mounted() {
@@ -108,32 +119,40 @@ export default {
   methods: {
     fetchStudents() {
       axios
-        .get(`${BASE_URL}students`) // Use BASE_URL constant here
+        .get(`${BASE_URL}students`)
         .then((response) => {
           this.students = response.data;
+          this.filterStudents(); // Filter students initially
         })
         .catch((error) => {
           console.error(error);
         });
     },
+    filterStudents() {
+      if (this.searchTerm === "") {
+        // If search term is empty, display all students
+        this.filteredStudents = this.students;
+      } else {
+        // Perform search filtering
+        const search = this.searchTerm.toLowerCase();
+        this.filteredStudents = this.students.filter(
+          (student) =>
+            student.full_name.toLowerCase().includes(search) ||
+            student.code.toLowerCase().includes(search) ||
+            student.email.toLowerCase().includes(search)
+        );
+      }
+    },
     confirmDeleteStudent(student) {
-      console.log("delete btn");
-      // Set the selected student to delete
       this.selectedStudent = student;
-
-      // Show the delete confirmation modal
-      document.getElementById("deleteConfirmationModal").style.display =
-        "block";
+      document.getElementById("deleteConfirmationModal").classList.add("show");
     },
     deleteStudentConfirmed() {
       if (this.selectedStudent) {
-        // Perform the delete operation using the selectedStudent object
         axios
           .delete(`${BASE_URL}students/${this.selectedStudent.code}`)
           .then((response) => {
-            // Check the response status and handle accordingly
             if (response.status === 200) {
-              // Remove the student from the list
               const index = this.students.findIndex(
                 (student) => student.code === this.selectedStudent.code
               );
@@ -141,20 +160,21 @@ export default {
                 this.students.splice(index, 1);
               }
             } else {
-              console.error(response.data.error); // Log the error message
+              console.error(response.data.error);
             }
           })
           .catch((error) => {
-            console.error(error); // Log any other errors
+            console.error(error);
           });
       }
-
-      // Hide the delete confirmation modal
-      document.getElementById("deleteConfirmationModal").style.display = "none";
-      document.body.classList.remove("modal-open");
+      document
+        .getElementById("deleteConfirmationModal")
+        .classList.remove("show");
     },
     cancelDeleteStudent() {
-      document.getElementById("deleteConfirmationModal").style.display = "none";
+      document
+        .getElementById("deleteConfirmationModal")
+        .classList.remove("show");
     },
   },
 };
