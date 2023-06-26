@@ -22,47 +22,9 @@ class APIStudentController extends Controller
 
     public function show($id)
     {
-        // Find the course by ID
-        $course = Course::findOrFail($id);
+        $student = Student::findOrFail($id);
 
-        // Get all enrolled students with their grades for the course
-        $students = $course->students()->with('grades')->get();
-
-        // Prepare the data for the table
-        $tableData = [];
-        $gradeItems = $course->gradeItems;
-
-        // Set the table headers
-        $tableHeaders = ['Student Full Name', 'Student Code'];
-        foreach ($gradeItems as $gradeItem) {
-            $tableHeaders[] = $gradeItem->name;
-        }
-        $tableHeaders[] = 'Total';
-
-        // Populate the table rows
-        foreach ($students as $student) {
-            $rowData = [
-                $student->full_name,
-                $student->code,
-            ];
-
-            $totalGrade = 0;
-            foreach ($gradeItems as $gradeItem) {
-                $grade = $student->grades->where('grade_item_id', $gradeItem->id)->first();
-                $gradeValue = $grade ? $grade->grade : '-';
-                $rowData[] = $gradeValue;
-                $totalGrade += $gradeValue;
-            }
-            $rowData[] = $totalGrade;
-
-            $tableData[] = $rowData;
-        }
-
-        // Return the table data as a response
-        return response()->json([
-            'headers' => $tableHeaders,
-            'data' => $tableData,
-        ]);
+        return response()->json($student);
     }
 
 

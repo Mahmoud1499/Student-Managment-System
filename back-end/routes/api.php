@@ -37,6 +37,12 @@ Route::put('/courses/{code}', [APICourseController::class, 'update']);
 Route::delete('/courses/{code}', [APICourseController::class, 'destroy']);
 
 // Enrollment and Grading
-Route::post('/courses/{code}/enrollment', [APICourseController::class, 'storeEnrollment']);
-Route::delete('/courses/{code}/enrollment/{studentCode}', [APICourseController::class, 'removeEnrollment']);
-Route::get('/courses/{code}/grades', [APICourseController::class, 'grades']);
+// Route::post('/courses/{code}/enrollment', [APICourseController::class, 'storeEnrollment']);
+// Route::delete('/courses/{code}/enrollment/{studentCode}', [APICourseController::class, 'removeEnrollment']);
+// Route::get('/courses/{code}/grades', [APICourseController::class, 'grades']);
+
+// Add student to course
+Route::post('/courses/{courseId}/students/{studentId}', [APICourseController::class, 'addStudent'] );
+
+// Remove student from course
+Route::delete('/courses/{courseId}/students/{studentId}', [APICourseController::class, 'removeStudent'] );

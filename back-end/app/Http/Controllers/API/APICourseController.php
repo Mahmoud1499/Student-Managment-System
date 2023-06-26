@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\Student;
 use Illuminate\Http\Request;
 // use App\Models\Student;
 
@@ -104,22 +106,6 @@ class APICourseController extends Controller
         return response()->json(['message' => 'Student enrolled successfully']);
     }
 
-    public function removeStudent(Request $request, $id)
-    {
-        // Find the course by ID
-        $course = Course::findOrFail($id);
-
-        // Validate the request data
-        $validatedData = $request->validate([
-            'student_id' => 'required|exists:students,id',
-        ]);
-
-        // Remove the student from the course
-        $course->students()->detach($validatedData['student_id']);
-
-        // Return a success response
-        return response()->json(['message' => 'Student removed from the course successfully']);
-    }
 
     public function grades($id)
     {
@@ -131,4 +117,54 @@ class APICourseController extends Controller
     }
 
     // Add additional methods for specific course functionality here
+    public function addStudent($courseId, $studentId)
+    {
+        $course = Course::findOrFail($courseId);
+        $student = Student::findOrFail($studentId);
+
+        // Check if the student is already enrolled in the course
+        $enrollment = Enrollment::where('course_code', $courseId)
+            ->where('student_code', $studentId)
+            ->first();
+
+        if ($enrollment) {
+            return response()->json([
+                'message' => 'Student is already enrolled in the course.'
+            ], 422);
+        }
+
+        // Create a new enrollment record
+        $enrollment = new Enrollment([
+            'course_code' => $courseId,
+            'student_code' => $studentId,
+        ]);
+        $enrollment->save();
+
+        return response()->json([
+            'message' => 'Student added to the course successfully.'
+        ]);
+    }
+
+    public function removeStudent($courseId, $studentId)
+    {
+        $course = Course::findOrFail($courseId);
+        $student = Student::findOrFail($studentId);
+
+        // Find and delete the enrollment record
+        $enrollment = Enrollment::where('course_code', $courseId)
+            ->where('student_code', $studentId)
+            ->first();
+
+        if (!$enrollment) {
+            return response()->json([
+                'message' => 'Student is not enrolled in the course.'
+            ], 422);
+        }
+
+        $enrollment->delete();
+
+        return response()->json([
+            'message' => 'Student removed from the course successfully.'
+        ]);
+    }
 }
