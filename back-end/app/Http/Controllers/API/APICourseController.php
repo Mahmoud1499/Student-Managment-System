@@ -22,17 +22,28 @@ class APICourseController extends Controller
     public function store(Request $request)
     {
         // Validate the request data
-        $validatedData = $request->validate([
-            'code' => 'required|unique:courses',
-            'name' => 'required',
-            'description' => 'required',
-        ]);
+        $validatedData = $this->validateCourseData($request);
 
         // Create a new course
         $course = Course::create($validatedData);
 
         // Return the created course as a response
         return response()->json($course);
+    }
+
+    /**
+     * Validate the course data.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function validateCourseData(Request $request)
+    {
+        return $request->validate([
+            'code' => 'required|unique:courses',
+            'name' => 'required',
+            'description' => 'required',
+        ]);
     }
 
 
@@ -75,11 +86,7 @@ class APICourseController extends Controller
         $course = Course::where('code', $code)->firstOrFail();
 
         // Validate the request data
-        $validatedData = $request->validate([
-            'code' => 'required|unique:courses,code,' . $code . ',code',
-            'name' => 'required',
-            'description' => 'required',
-        ]);
+        $validatedData = $this->validateCourseData($request);
 
         // Update the course
         $course->update($validatedData);
@@ -123,44 +130,77 @@ class APICourseController extends Controller
         $student = Student::findOrFail($studentId);
 
         // Check if the student is already enrolled in the course
-        $enrollment = Enrollment::where('course_code', $courseId)
-            ->where('student_code', $studentId)
-            ->first();
-
-        if ($enrollment) {
+        if ($this->isStudentEnrolled($courseId, $studentId)) {
             return response()->json([
                 'message' => 'Student is already enrolled in the course.'
             ], 422);
         }
 
         // Create a new enrollment record
-        $enrollment = new Enrollment([
-            'course_code' => $courseId,
-            'student_code' => $studentId,
-        ]);
-        $enrollment->save();
+        $this->createEnrollment($courseId, $studentId);
 
         return response()->json([
             'message' => 'Student added to the course successfully.'
         ]);
     }
 
+    /**
+     * Check if a student is enrolled in a course.
+     *
+     * @param  int  $courseId
+     * @param  int  $studentId
+     * @return bool
+     */
+    protected function isStudentEnrolled($courseId, $studentId)
+    {
+        return Enrollment::where('course_code', $courseId)
+            ->where('student_code', $studentId)
+            ->first() !== null;
+    }
+
+    /**
+     * Create a new enrollment record.
+     *
+     * @param  int  $courseId
+     * @param  int  $studentId
+     */
+    protected function createEnrollment($courseId, $studentId)
+    {
+        $enrollment = new Enrollment([
+            'course_code' => $courseId,
+            'student_code' => $studentId,
+        ]);
+        $enrollment->save();
+    }
+
     public function removeStudent($courseId, $studentId)
     {
-        $enrollment = Enrollment::where('course_code', $courseId)
-            ->where('student_code', $studentId)
-            ->first();
-
-        if (!$enrollment) {
+        // Check if the student is enrolled in the course
+        if (!$this->isStudentEnrolled($courseId, $studentId)) {
             return response()->json([
                 'message' => 'Student is not enrolled in the course.'
             ], 422);
         }
 
-        $enrollment->delete();
+        // Delete the enrollment record
+        $this->deleteEnrollment($courseId, $studentId);
 
         return response()->json([
             'message' => 'Student removed from the course successfully.'
         ]);
+    }
+
+    /**
+     * Delete an enrollment record.
+     *
+     * @param  int  $courseId
+     * @param  int  $studentId
+     */
+    protected function deleteEnrollment($courseId, $studentId)
+    {
+        $enrollment = Enrollment::where('course_code', $courseId)
+            ->where('student_code', $studentId)
+            ->first();
+        $enrollment->delete();
     }
 }
