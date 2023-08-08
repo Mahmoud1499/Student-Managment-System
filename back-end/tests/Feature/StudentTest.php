@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Models\Student;
 
 class StudentTest extends TestCase
 {
@@ -11,7 +12,11 @@ class StudentTest extends TestCase
      */
     public function test_add_student()
     {
-        // TODO: Implement test.
+        $student = new Student();
+        $student->name = 'Test Student';
+        $student->save();
+    
+        $this->assertDatabaseHas('students', ['name' => 'Test Student']);
     }
 
     /**
@@ -19,7 +24,14 @@ class StudentTest extends TestCase
      */
     public function test_edit_student()
     {
-        // TODO: Implement test.
+        $student = new Student();
+        $student->name = 'Test Student';
+        $student->save();
+    
+        $student->name = 'Edited Test Student';
+        $student->save();
+    
+        $this->assertDatabaseHas('students', ['name' => 'Edited Test Student']);
     }
 
     /**
@@ -27,6 +39,12 @@ class StudentTest extends TestCase
      */
     public function test_delete_student()
     {
-        // TODO: Implement test.
+        $student = new Student();
+        $student->name = 'Test Student';
+        $student->save();
+    
+        $student->delete();
+    
+        $this->assertDatabaseMissing('students', ['name' => 'Test Student']);
     }
 }
