@@ -11,7 +11,8 @@ class CourseFunctionsTest extends TestCase
      */
     public function test_course_helper_function()
     {
-        // TODO: Implement test.
+        $result = course_helper_function('input');
+        $this->assertEquals('expected output', $result);
     }
 
     // Add more test methods as needed.
