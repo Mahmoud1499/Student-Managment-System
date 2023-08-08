@@ -11,7 +11,11 @@ class CourseTest extends TestCase
      */
     public function test_add_course()
     {
-        // TODO: Implement test.
+        $course = new Course();
+        $course->name = 'Test Course';
+        $course->save();
+    
+        $this->assertDatabaseHas('courses', ['name' => 'Test Course']);
     }
 
     /**
@@ -19,7 +23,14 @@ class CourseTest extends TestCase
      */
     public function test_edit_course()
     {
-        // TODO: Implement test.
+        $course = new Course();
+        $course->name = 'Test Course';
+        $course->save();
+    
+        $course->name = 'Edited Test Course';
+        $course->save();
+    
+        $this->assertDatabaseHas('courses', ['name' => 'Edited Test Course']);
     }
 
     /**
@@ -27,6 +38,12 @@ class CourseTest extends TestCase
      */
     public function test_delete_course()
     {
-        // TODO: Implement test.
+        $course = new Course();
+        $course->name = 'Test Course';
+        $course->save();
+    
+        $course->delete();
+    
+        $this->assertDatabaseMissing('courses', ['name' => 'Test Course']);
     }
 }
