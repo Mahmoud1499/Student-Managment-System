@@ -11,6 +11,11 @@ use Illuminate\Http\Request;
 class APIStudentController extends Controller
 {
     //
+    /**
+     * Display a listing of the students.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         // Retrieve all students
@@ -20,6 +25,12 @@ class APIStudentController extends Controller
         return response()->json($students);
     }
 
+    /**
+     * Display the specified student.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function show($id)
     {
         $student = Student::with('courses')->findOrFail($id);
@@ -28,6 +39,12 @@ class APIStudentController extends Controller
     }
 
 
+    /**
+     * Store a newly created student in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         // Validate the request data
@@ -46,6 +63,13 @@ class APIStudentController extends Controller
         return response()->json($student, 201);
     }
 
+    /**
+     * Update the specified student in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request, $id)
     {
         // Find the student by ID
@@ -67,6 +91,12 @@ class APIStudentController extends Controller
         return response()->json($student);
     }
 
+    /**
+     * Remove the specified student from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function destroy($id)
     {
         // Find the student by ID
