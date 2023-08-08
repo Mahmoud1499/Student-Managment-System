@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
+use App\Helpers\StudentHelper;
 
 class StudentFunctionsTest extends TestCase
 {
